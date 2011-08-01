@@ -28,13 +28,11 @@ app.configure('production', function(){
 });
 
 // Routes
-/*
-app.get('/', function(req, res){
+app.get('/chat', function(req, res){
   res.render('index', {
-    title: 'Express'
+    title: 'SampleChat'
   });
 });
-*/
 
 app.listen(3009);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
