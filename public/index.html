@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>みゆっき☆Think 第6回</title>
+<link rel="stylesheet" href="stylesheets/common.css">
+<script src="javascripts/jquery.js"></script>
+<script src="javascripts/jquery.presentation.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+  var socket = io.connect('http://sakura.mesolabs.com:3009/');
+  socket.on('count', function(data) {
+    console.log(data);
+    if (data.count) {
+      $('#count').text(data.count);
+    }
+  });
+</script>
+</head>
+<body>
+  <div class="mod-page top">
+    <div>
+      <h1>Node.js</h1>
+      <br /><br /><br />
+      <h2>ニコニコ事業本部 企画開発部</h2>
+      <h2>清水 俊博</h2>
+    </div>
+  </div>
+ 
+  <div class="mod-page plain">
+    <div>
+      <h2>自己紹介</h2>
+      <h3>氏名</h3>
+      <ul>
+        <li>清水 俊博</li>
+      </ul>
+      <h3>所属</h3>
+      <ul>
+        <li>株式会社ドワンゴ</li>
+        <li><a href="http://nodejs.jp">Node.js 日本ユーザグループ</a> 代表</li>
+        <li>java-ja</li>
+        <li>etc...</li>
+      </ul>
+      <h3>SocialMedia</h3>
+      <ul>
+        <li>Twitter: <a href="http://twitter.com/meso">@meso</a></li>
+        <li>Hatena: <a href="http://d.hatena.ne.jp/t_43z">id:t_43z</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>アジェンダ</h2>
+      <ul><h3>
+        <li>Node.jsの紹介</li>
+        <li>Node.jsを使う</li></h3>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mod-page shout">
+    <div>
+      <p>Node.jsの紹介</p>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>Node.jsとは何か</h2>
+      <ul>
+        <li>Webブラウザ外で動作する、JavaScript実行環境（プラットフォーム）</li>
+        <li>いわゆるサーバサイドJavaScriptの1つ</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>サーバサイドJavaScript</h2>
+      <ul>
+        <li>Node.js以外にも従来からいくつも存在</li>
+        <li>しかしあまり流行らなかった
+          <p>「別にサーバサイドまでJavaScriptで書きたいとは思わないんだけど」で玉砕</p>
+        </li>
+        <li>Node.jsは問題を解決するためにあえてJavaScriptを選んだ</li>
+        <li>JavaScriptであることに確固たる裏づけがある</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>解決すべき問題</h2>
+      <ul>
+        <li>C10K問題
+        <p>ハードウェアの性能に問題がなくても、同時接続するクライアント数に限界がきてしまう問題<br />
+        原因は複合的だが、主な原因の1つはスレッド数の増大<br />
+        Ajax/Commetが出てきて注目された</p>
+        </li>
+      </ul>
+      <h2>どうやって解決したか</h2>
+      <ul>
+        <li>イベントループとノンブロッキングI/O</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>イベントループモデル</h2>
+      <ul>
+        <li>1つのスレッドがイベントの発生を待機</li>
+        <li>イベントが発生したらそのイベントに即した処理を行う</li>
+        <li>重い処理を行う際には「その処理の結果が返ってきたら行う処理」を登録する</li>
+        <li>重い処理の結果が返ってくるのをその場で待ち続けはしない</li>
+        <li>シングルスレッドでも複数の同時リクエストをさばける</li>
+      </ul>
+      この辺に図
+    </div>
+  </div>
+  
+  <div class="mod-page plain">
+    <div>
+      <h2>ノンブロッキングI/O</h2>
+      <ul>
+        <li>イベントループモデルの問題点: 重い処理をどう見極めるか</li>
+        <li>CPUにとっての重い処理: ディスクやネットワークのI/O</li>
+        <li>プログラマが見極めるんじゃなくて強制的I/Oを非同期にしてしまおう</li>
+        <li>I/O待ちによってブロックされることがないため性能が低下しない</li>
+      </ul>
+      この辺に表
+    </div>
+  </div>
+  
+  <div class="mod-page plain">
+    <div>
+      <h2>なぜJavaScriptなのか</h2>
+      <ul>
+        <li>シングルスレッドモデルである</li>
+        <li>イベントループの仕組みが備わっている</li>
+        <li>標準入出力の仕様がない
+        <p>既存のI/Oライブラリが存在しないため、0からすべてがノンブロッキングな世界を作り上げることができる環境</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="mod-page plain">
+    <div>
+      <h2>JavaScriptにした恩恵</h2>
+      <ul>
+        <li>ブラウザ競争のおかげで爆速なV8を使用できた</li>
+        <li>ユーザベースが大きい</li>
+        <li>新たな言語を覚えなくていい</li>
+        <li>開発環境やツールが整備されている</li>
+        <li>大きなイベントがある(jsconf)</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="mod-page shout">
+    <div>
+      <p>Node.jsを使う</p>
+    </div>
+  </div>
+  
+  <div class="mod-page plain">
+    <div>
+      <h2>適した分野</h2>
+      <ul>
+        <li>リアルタイムWebアプリケーション
+        <p>チャット, ゲーム, コラボレーションツール, etc...</p>
+        </li>
+        <li>クローラー
+        <p>「夜のNode.js」でggr</p>
+        </li>
+        <li>スクレイピング
+        <p>jQueryなどのJSライブラリを使えるので、スクレイピングが楽チン</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="mod-page plain">
+    <div>
+      <h2>作るもの</h2>
+      <ul>
+        <li>チャット
+        <p>Express/Socket.IO<br />
+        http://d.hatena.ne.jp/t_43z/20101013/1286957802</p>
+        </li>
+        <li>Twitter Streaming APIで特定ハッシュタグを垂れ流す
+        <p>OAuthいらないから楽<br />
+        http://d.hatena.ne.jp/miruto824/20110608/1307526558</p>
+        </li>
+        <li>クローラーとかスクレイピングツールとか
+        <p>サーバサイドじゃないと次に繋げにくい？<br />
+        https://github.com/visionmedia/query</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mod-page shout">
+    <div>
+      <p>ありがとう</p>
+      <p>ございました</p>
+    </div>
+  </div>
+
+
+<hr />
+
+<div class="mod-url">http://miyukki.mesolabs.com/</div>
+<ul class="mod-pager" id="pager"> <li id="pager-L"><a href="#">L</a></li> <li id="pager-R"><a href="#">R</a></li> </ul>
+<p class="mod-pageNum" id="pageNum"> <span class="current" id="pageNum-current">0</span> / <span class="total" id="pageNum-total">0</span> </p>
+<div class="mod-viewer" id="viewer">閲覧者数: <span id="count">0</span> 人</div>
+
+</body>
+</html>
