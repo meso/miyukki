@@ -94,9 +94,9 @@
       <h2>解決すべき問題</h2>
       <ul>
         <li>C10K問題
-        <p>ハードウェアの性能に問題がなくても、同時接続するクライアント数に限界がきてしまう問題<br />
-        原因は複合的だが、主な原因の1つはスレッド数の増大<br />
-        Ajax/Commetが出てきて注目された</p>
+        <p>- ハードウェアの性能に関わらず、同時接続するクライアント数に限界がきてしまう問題<br />
+        - 原因は複合的だが、主な原因の1つはスレッド数の増大<br />
+        - Ajax/Commetが出てきて注目された</p>
         </li>
       </ul>
       <h2>どうやって解決したか</h2>
@@ -116,26 +116,54 @@
         <li>重い処理の結果が返ってくるのをその場で待ち続けはしない</li>
         <li>シングルスレッドでも複数の同時リクエストをさばける</li>
       </ul>
-      この辺に図
     </div>
   </div>
-  
+  <div class="mod-page center">
+    <div>
+      <img src="img/pict01.png" width="500" height="500" />
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>問題点</h2>
+      <ul>
+        <li>1ヵ所でも重い処理を待つコードがあれば、シングルスレッドゆえに全体の性能が低下する</li>
+        <li>CPUにとっての重い処理<br />
+        = ディスクやネットワークのI/O待ち</li>
+      </ul>
+      <table>
+        <tr><th style="text-align: center;">種別</th><th style="text-align: center;">サイクル</th><th style="text-align: center;">メートル換算</th></tr>
+        <tr><td>CPU L1キャッシュ</td><td style="text-align: right;">3</td><td style="text-align: right;">3m</td></tr>
+        <tr><td>CPU L2キャッシュ</td><td style="text-align: right;">14</td><td style="text-align: right;">14m</td></tr>
+        <tr><td>メモリ</td><td style="text-align: right;">250</td><td style="text-align: right;">250m</td></tr>
+        <tr><td>ディスク</td><td style="text-align: right;">41,000,000</td><td style="text-align: right;">地球1周</td></tr>
+        <tr><td>ネットワーク</td><td style="text-align: right">240,000,000</td><td style="text-align: right;">地球6周</td></tr>
+      </table>
+    </div>
+  </div>
+
   <div class="mod-page plain">
     <div>
       <h2>ノンブロッキングI/O</h2>
       <ul>
-        <li>イベントループモデルの問題点: 重い処理をどう見極めるか</li>
-        <li>CPUにとっての重い処理: ディスクやネットワークのI/O</li>
         <li>プログラマが見極めるんじゃなくて強制的I/Oを非同期にしてしまおう</li>
+        <li>libev, libeioといったライブラリによって実現<br />
+        Windowsとの差分も抽象化するlibuvを開発中</li>
         <li>I/O待ちによってブロックされることがないため性能が低下しない</li>
       </ul>
-      この辺に表
+    </div>
+  </div>
+
+  <div class="mod-page shout">
+    <div>
+      <p>このようなプラットフォームをどの言語向けに提供すべきか</p>
     </div>
   </div>
   
   <div class="mod-page plain">
     <div>
-      <h2>なぜJavaScriptなのか</h2>
+      <h2>JavaScript</h2>
       <ul>
         <li>シングルスレッドモデルである</li>
         <li>イベントループの仕組みが備わっている</li>
@@ -185,19 +213,86 @@
     <div>
       <h2>作るもの</h2>
       <ul>
-        <li>チャット
-        <p>Express/Socket.IO<br />
-        http://d.hatena.ne.jp/t_43z/20101013/1286957802</p>
-        </li>
-        <li>Twitter Streaming APIで特定ハッシュタグを垂れ流す
-        <p>OAuthいらないから楽<br />
-        http://d.hatena.ne.jp/miruto824/20110608/1307526558</p>
-        </li>
-        <li>クローラーとかスクレイピングツールとか
-        <p>サーバサイドじゃないと次に繋げにくい？<br />
-        https://github.com/visionmedia/query</p>
+        <li>Webチャット
+          <ul>
+            <li>リアルタイムさを味わってもらう</li>
+            <li>Node.jsのイベント駆動の仕組みを学ぶ</li>
+            <li>手頃なボリューム</li>
+          </ul>
         </li>
       </ul>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>使うもの</h2>
+      <ul>
+        <li><a href="http://expressjs.com/">Express</a><br />
+        RubyのSinatraライクなWebアプリケーションフレームワーク</li>
+        <li><a href="http://socket.io/">Socket.IO</a><br />
+        WebSocket等を用いてブラウザとサーバでリアルタイム通信を行うためのライブラリ</li>
+      </ul>
+      <p>Node.jsは低レベルのAPIしか用意していないので、このようなモジュールを使って開発するのが一般的</p>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>インストール</h2>
+      <pre style="font-size: 24px;">
+$ curl http://nodejs.org/dist/node-v0.4.10.tar.gz | tar xz
+$ cd node-v0.4.10
+$ ./configure
+$ make
+$ sudo make install
+$ curl http://npmjs.org/install.sh | sudo sh
+      </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>準備</h2>
+      <pre style="font-size: 24px;">
+$ npm install express -g
+$ express chat
+$ cd chat
+$ cat package.json
+{
+    "name": "ChatSample"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+      "express": "2.4.3"
+    , "jade": ">= 0.0.1"
+    , "socket.io": ">= 0.7"
+  }
+}
+$ npm install
+      </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>ディレクトリ構成</h2>
+      <pre style="font-size: 24px;">
+chat
+  - public
+      - stylesheets
+          - style.css
+      - images
+      - javascripts
+  - views
+      - layout.jade
+      - index.jade
+  - app.js
+  - package.json
+  - node_modules
+      - express
+      - socket.io
+      </pre>
     </div>
   </div>
 
