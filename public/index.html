@@ -8,7 +8,7 @@
 <script src="javascripts/jquery.presentation.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-  var socket = io.connect('http://sakura.mesolabs.com:3009/');
+  var socket = io.connect('http://sakura.mesolabs.com:3009/slide');
   socket.on('count', function(data) {
     console.log(data);
     if (data.count) {
@@ -118,9 +118,10 @@
       </ul>
     </div>
   </div>
+
   <div class="mod-page center">
     <div>
-      <img src="img/pict01.png" width="500" height="500" />
+      <img src="images/pict01.png" width="500" height="500" />
     </div>
   </div>
 
@@ -293,6 +294,238 @@ chat
       - express
       - socket.io
       </pre>
+    </div>
+  </div>
+
+<div class="mod-page plain">
+    <div>
+      <h2>app.js</h2>
+      <pre style="font-size: 24px;">
+var express = require('express');
+var app = module.exports = express.createServer();
+
+app.configure(function(){
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
+});
+      </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>app.js続き</h2>
+      <pre style="font-size: 24px;">
+app.configure('development', function(){
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+});
+app.configure('production', function(){
+  app.use(express.errorHandler()); 
+});
+app.get('/', function(req, res){
+  res.render('index', {
+    title: 'Express'
+  });
+});
+app.listen(3000);
+console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+      </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>view/index.jade</h2>
+      <pre style="font-size: 24px;">
+h1= title
+p Welcome to #{title}
+      </pre>
+      <h2>view/layout.jade</h2>
+      <pre style="font-size: 24px;">
+!!!
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body!= body
+      </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>実行</h2>
+      <pre style="font-size: 24px;">
+$ node app.js
+      </pre>
+    http://localhost:3000/
+      <img src="images/express.png" width="500" height="250" />
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>リアルタイムアプリケーションの実装</h2>
+      <ol>
+        <li>同時アクセス数を表示 ←まずここ</li>
+        <li>チャットテキストの送受信</li>
+      </ol>
+    </div>
+  </div>
+
+
+  <div class="mod-page plain">
+    <div>
+      <h2>Socket.IO - サーバ側</h2>
+      <pre style="font-size: 24px;">
+var chatCount = 0;
+var messages = []; // あとで使う
+var chat = io.of('/chat').on('connection', function(socket) {
+  chatCount++;
+  chat.emit('count', {count: chatCount});
+
+  socket.on('message', function(data) {
+    // ブラウザからチャットテキストを受信した時の処理
+  });
+
+  socket.on('disconnect', function() {
+    chatCount--;
+    chat.emit('count', {count: chatCount});
+  });
+});
+     </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>Socket.IO - ブラウザ側</h2>
+      <pre style="font-size: 24px;">
+var chat = io.connect('http://localhost:3000/chat');
+chat.on('connect', function() {
+  chat.on('count', function(data) {
+    $('#count').text(data.count);
+  });
+  chat.on('message', function(data) {
+    // サーバからチャットテキストを受信した時の処理
+  });
+});
+function send() {
+  // サーバへチャットテキストを送信する処理
+}
+      </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>テンプレート</h2>
+      <pre style="font-size: 24px;">
+h1= title
+p 現在接続している人は
+  span#count
+  人います
+#chat
+form#form(onsubmit='send(); return false;')
+  input#name(type='text', placeholder='Twitter ID')
+  input#text(type='text', autocomplete='off')
+  input(type='submit', value='送信')
+      </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>リアルタイムアプリケーションの実装</h2>
+      <ol>
+        <li>同時アクセス数を表示</li>
+        <li>チャットテキストの送受信 ←次ここ</li>
+      </ol>
+    </div>
+  </div>
+
+
+  <div class="mod-page plain">
+    <div>
+      <h2>サーバへ送信する処理</h2>
+      <pre style="font-size: 24px;">
+function send() {
+  var name = $('#name').val();
+  var text = $('#text').val();
+  if (text && name && name != "Twitter ID") {
+    chat.emit('message', {name: name, text: text});
+    $('#text').val('');
+  }
+}
+      </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>サーバが受信したときの処理</h2>
+      <pre style="font-size: 24px;">
+var chat = io.of('/chat').on('connection', function(socket) {
+  //省略
+  messages.forEach(function(data) {
+    socket.emit('message', data);
+  });
+  socket.on('message', function(data) {
+    data.timestamp = new Date().getTime();
+    chat.emit('message', data);
+    var length = messages.push(data);
+    if (length > 100) {
+      messages.shift();
+    }
+  });
+  //省略
+});
+      </pre>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>ブラウザが受信した時の処理</h2>
+      <pre style="font-size: 24px;">
+chat.on('message', function(data) {
+  var date = new Date(data.timestamp);
+  $('#chat').append(
+    '&lt;div class="chatlog">&lt;p>&lt;a href="http://twitter.com/'
+    + escape(data.name) 
+    + '">&lt;img src="http://api.dan.co.jp/twicon/'
+    + escape(data.name)
+    + '/mini" />&lt;/a> '
+    + escape(data.text)
+    + '&lt;/p>&lt;span class="date">'
+    + date.toString()
+    + '&lt;/span>&lt;/div>');
+    $('#chat').scrollTop(1000000);
+});
+      </pre>
+    </div>
+  </div>
+
+
+  <div class="mod-page plain">
+    <div>
+      <h2>完成したチャット</h2>
+      <h3>http://miyukki.mesolabs.com/chat</h3>
+    </div>
+  </div>
+
+  <div class="mod-page plain">
+    <div>
+      <h2>まとめ</h2>
+      <ul>
+        <li>Node.jsには"js"である確固たる理由があります</li>
+        <li>Node.jsを使うとスケーラブルなリアルタイムWebアプリケーションが簡単に作成できます</li>
+        <li>Webアプリだけじゃなくてクライアントアプリも作れます</li>
+      </ul>
     </div>
   </div>
 
