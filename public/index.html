@@ -382,6 +382,7 @@ $ node app.js
     <div>
       <h2>Socket.IO - サーバ側</h2>
       <pre style="font-size: 24px;">
+var io = require('socket.io').listen(app);
 var chatCount = 0;
 var messages = []; // あとで使う
 var chat = io.of('/chat').on('connection', function(socket) {
@@ -391,7 +392,6 @@ var chat = io.of('/chat').on('connection', function(socket) {
   socket.on('message', function(data) {
     // ブラウザからチャットテキストを受信した時の処理
   });
-
   socket.on('disconnect', function() {
     chatCount--;
     chat.emit('count', {count: chatCount});
