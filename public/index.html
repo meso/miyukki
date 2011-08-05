@@ -431,7 +431,7 @@ p 現在接続している人は
   人います
 #chat
 form#form(onsubmit='send(); return false;')
-  input#name(type='text', placeholder='Twitter ID')
+  input#name(type='text', placeholder='Name')
   input#text(type='text', autocomplete='off')
   input(type='submit', value='送信')
       </pre>
@@ -456,7 +456,7 @@ form#form(onsubmit='send(); return false;')
 function send() {
   var name = $('#name').val();
   var text = $('#text').val();
-  if (text && name && name != "Twitter ID") {
+  if (text && name) {
     chat.emit('message', {name: name, text: text});
     $('#text').val('');
   }
@@ -495,16 +495,14 @@ var chat = io.of('/chat').on('connection', function(socket) {
 chat.on('message', function(data) {
   var date = new Date(data.timestamp);
   $('#chat').append(
-    '&lt;div class="chatlog">&lt;p>&lt;a href="http://twitter.com/'
-    + escape(data.name) 
-    + '">&lt;img src="http://api.dan.co.jp/twicon/'
+    '&lt;div class="chatlog">&lt;p>
     + escape(data.name)
-    + '/mini" />&lt;/a> '
+    + ': '
     + escape(data.text)
     + '&lt;/p>&lt;span class="date">'
     + date.toString()
     + '&lt;/span>&lt;/div>');
-    $('#chat').scrollTop(1000000);
+  $('#chat').scrollTop(1000000);
 });
       </pre>
     </div>

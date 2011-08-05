@@ -5,7 +5,7 @@ chat.on('connect', function() {
   });
   chat.on('message', function(data) {
     var date = new Date(data.timestamp);
-    $('#chat').append('<div class="chatlog"><p><a href="http://twitter.com/' + escape(data.name) + '"><img src="http://api.dan.co.jp/twicon/' + escape(data.name) + '/mini" /></a> ' + escape(data.text) + '</p><span class="date">' + date.toString() + '</span></div>');
+    $('#chat').append('<div class="chatlog"><p>' + escape(data.name) + ': ' + escape(data.text) + '</p><span class="date">' + date.toString() + '</span></div>');
       $('#chat').scrollTop(1000000);
   });
 });
@@ -13,7 +13,7 @@ chat.on('connect', function() {
 function send() {
   var name = $('#name').val();
   var text = $('#text').val();
-  if (text && name && name != "Twitter ID") {
+  if (text && name) {
     chat.emit('message', {name: name, text: text});
     $('#text').val('');
   }
