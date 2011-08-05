@@ -490,7 +490,7 @@ var chat = io.of('/chat').on('connection', function(socket) {
 
   <div class="mod-page plain">
     <div>
-      <h2>ブラウザが受信した時の処理</h2>
+      <h2>ブラウザ受信時の処理</h2>
       <pre style="font-size: 24px;">
 chat.on('message', function(data) {
   var date = new Date(data.timestamp);
