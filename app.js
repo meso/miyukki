@@ -72,3 +72,8 @@ var chat = io.of('/chat').on('connection', function(socket) {
   });
 });
 
+
+process.on('uncaughtException', function(err) {
+  console.log(err.toString());
+});
+
